@@ -1,7 +1,9 @@
 package com.autobots.automanager.entidades;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -27,8 +29,8 @@ public class Cliente {
 	private Date dataNascimento;
 	@Column
 	private Date dataCadastro;
-	@OneToMany(mappedBy = "cliente", orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	private Set<Documento> documentos = new HashSet<>();
+	@OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	private List<Documento> documentos =  new ArrayList<>();
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
 	private Endereco endereco;
 	@OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
@@ -64,10 +66,10 @@ public class Cliente {
 	public void setDataCadastro(Date dataCadastro) {
 		this.dataCadastro = dataCadastro;
 	}
-	public Set<Documento> getDocumentos() {
+	public List<Documento> getDocumentos() {
 		return documentos;
 	}
-	public void setDocumentos(Set<Documento> documentos) {
+	public void setDocumentos(List<Documento> documentos) {
 		this.documentos = documentos;
 	}
 	public Endereco getEndereco() {

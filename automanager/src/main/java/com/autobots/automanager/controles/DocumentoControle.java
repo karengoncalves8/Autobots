@@ -1,9 +1,6 @@
 package com.autobots.automanager.controles;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,6 +22,7 @@ import com.autobots.automanager.modelo.DocumentoSelecionador;
 import com.autobots.automanager.repositorios.ClienteRepositorio;
 import com.autobots.automanager.repositorios.DocumentoRepositorio;
 
+
 @RestController
 @RequestMapping("/documento")
 public class DocumentoControle {
@@ -40,8 +38,14 @@ public class DocumentoControle {
 	@Autowired
 	private DocumentoSelecionador doc_selecionador;
 
+	@GetMapping("/todos")
+	public ResponseEntity<List<Documento>> obterTodosDocumetnos() {
+		List<Documento> documentos = doc_repo.findAll();
+		return ResponseEntity.status(HttpStatus.OK).body(documentos);
+	}
+	
 	@GetMapping("/cliente/{cli_id}")
-	public ResponseEntity<Set<Documento>> obterTodosDocumentosCliente(@PathVariable Long cli_id) {
+	public ResponseEntity<List<Documento>> obterTodosDocumentosCliente(@PathVariable Long cli_id) {
 		List<Cliente> clientes = cli_repo.findAll();
 		Cliente cliente = cli_selecionador.selecionar(clientes, cli_id);
 
@@ -49,28 +53,19 @@ public class DocumentoControle {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
 		}
 
-		Set<Documento> documentos = cliente.getDocumentos();
+		List<Documento> documentos = cliente.getDocumentos();
 
 		return ResponseEntity.status(HttpStatus.OK).body(documentos);
 	}
 
-	@GetMapping("/cliente/{cli_id}/{doc_id}")
-	public ResponseEntity<?> obterDocumentoCliente(@PathVariable Long cli_id, @PathVariable Long doc_id) {
-		List<Cliente> clientes = cli_repo.findAll();
-		Cliente cliente = cli_selecionador.selecionar(clientes, cli_id);
-
-		if (cliente == null) {
-			Map<String, String> response = new HashMap<>();
-        	response.put("message", "Cliente não encontrado");
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-		}
-
-		Set<Documento> documentos = cliente.getDocumentos();
-
+	@GetMapping("/{doc_id}")
+	public ResponseEntity<Documento> obterDocumentoPorId(@PathVariable Long doc_id) {
+		List<Documento> documentos = doc_repo.findAll();
 		Documento documento = doc_selecionador.selecionar(documentos, doc_id);
 
 		return ResponseEntity.status(HttpStatus.OK).body(documento);
 	}
+
 
 	@PostMapping("/{cli_id}/cadastrar")
 	public ResponseEntity<String> cadastrarClienteDocumento(@PathVariable Long cli_id, @RequestBody Documento documento) {
@@ -81,8 +76,7 @@ public class DocumentoControle {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cliente não encontrado");
 		}
 
-		documento.setCliente(cliente);
-
+		cliente.getDocumentos().add(documento);
 		doc_repo.save(documento);
 		
 		return ResponseEntity.status(HttpStatus.OK).body("Documento cadastrado com sucesso!");
@@ -98,7 +92,7 @@ public class DocumentoControle {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cliente não encontrado");
 		}
 		
-		Set<Documento> documentos = cliente.getDocumentos();
+		List<Documento> documentos = cliente.getDocumentos();
 		Documento documento = doc_selecionador.selecionar(documentos, att_documento.getId());
 		
 		DocumentoAtualizador doc_atualizador = new DocumentoAtualizador();
@@ -118,17 +112,14 @@ public class DocumentoControle {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cliente não encontrado");
 		}
 		
-		Set<Documento> documentos = cliente.getDocumentos();
+		List<Documento> documentos = cliente.getDocumentos();
 		Documento documento = doc_selecionador.selecionar(documentos, doc_excluido.getId());
 
 		if(documento == null){
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Documento não encontrado");
 		}
-
-		cliente.getDocumentos().remove(documento);
-    
-		cli_repo.save(cliente);
 		
+		cliente.getDocumentos().remove(documento);
 		doc_repo.delete(documento);
 
 		return ResponseEntity.status(HttpStatus.OK).body("Documento excluído com sucesso!");

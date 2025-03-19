@@ -29,7 +29,6 @@ public class AutomanagerApplication {
 
 		@Override
 		public void run(ApplicationArguments args) throws Exception {
-			System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
 			Calendar calendario = Calendar.getInstance();
 			calendario.set(2002, 05, 15);
 
@@ -57,13 +56,11 @@ public class AutomanagerApplication {
 			Documento rg = new Documento();
 			rg.setTipo("RG");
 			rg.setNumero("1500");
-			rg.setCliente(cliente);
 			
 			Documento cpf = new Documento();
 			cpf.setTipo("RG");
 			cpf.setNumero("00000000001");
-			cpf.setCliente(cliente);
-			
+
 			cliente.getDocumentos().add(rg);
 			cliente.getDocumentos().add(cpf);
 			
