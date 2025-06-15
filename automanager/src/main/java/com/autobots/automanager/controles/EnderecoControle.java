@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.autobots.automanager.entidades.Cliente;
 import com.autobots.automanager.entidades.Endereco;
+import com.autobots.automanager.modelo.AdicionadorLinkEndereco;
 import com.autobots.automanager.modelo.ClienteSelecionador;
 import com.autobots.automanager.modelo.EnderecoAtualizador;
 import com.autobots.automanager.modelo.EnderecoSelecionador;
@@ -38,9 +39,16 @@ public class EnderecoControle {
 	@Autowired
 	private EnderecoSelecionador end_selecionador;
 
+	@Autowired
+	private AdicionadorLinkEndereco adicionadorLink;
+
 	@GetMapping("/todos")
-	public ResponseEntity<List<Endereco>> obterTodosDocumetnos() {
+	public ResponseEntity<List<Endereco>> obterTodosEnderecos() {
 		List<Endereco> enderecos = end_repo.findAll();
+		if (enderecos.isEmpty()) {
+			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+		}
+		adicionadorLink.adicionarLinkList(enderecos);
 		return ResponseEntity.status(HttpStatus.OK).body(enderecos);
 	}
 	
@@ -54,6 +62,7 @@ public class EnderecoControle {
 		}
 
 		Endereco endereco = cliente.getEndereco();
+		adicionadorLink.adicionarLink(endereco);
 
 		return ResponseEntity.status(HttpStatus.OK).body(endereco);
 	}
@@ -66,6 +75,8 @@ public class EnderecoControle {
 		if (endereco == null) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Endereço não encontrado");
 		}
+
+		adicionadorLink.adicionarLink(endereco);
 
 		return ResponseEntity.status(HttpStatus.OK).body(endereco);
 	}
@@ -82,7 +93,7 @@ public class EnderecoControle {
 		cliente.setEndereco(endereco);
 		end_repo.save(endereco);
 		
-		return ResponseEntity.status(HttpStatus.OK).body("Endereço cadastrado com sucesso!");
+		return ResponseEntity.status(HttpStatus.CREATED).body("Endereço cadastrado com sucesso!");
 	}
 	
 

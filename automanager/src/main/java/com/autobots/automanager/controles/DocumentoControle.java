@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.autobots.automanager.entidades.Cliente;
 import com.autobots.automanager.entidades.Documento;
+import com.autobots.automanager.modelo.AdicionadorLinkDocumento;
 import com.autobots.automanager.modelo.ClienteSelecionador;
 import com.autobots.automanager.modelo.DocumentoAtualizador;
 import com.autobots.automanager.modelo.DocumentoSelecionador;
@@ -38,11 +39,18 @@ public class DocumentoControle {
 	@Autowired
 	private DocumentoSelecionador doc_selecionador;
 
+	@Autowired
+	private AdicionadorLinkDocumento adicionadorLink;
+
 	@GetMapping("/todos")
 	public ResponseEntity<List<Documento>> obterTodosDocumetnos() {
 		List<Documento> documentos = doc_repo.findAll();
+		if (documentos.isEmpty()) {
+			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+		}
+		adicionadorLink.adicionarLinkList(documentos);
 		return ResponseEntity.status(HttpStatus.OK).body(documentos);
-	}
+	}						
 	
 	@GetMapping("/cliente/{cli_id}")
 	public ResponseEntity<List<Documento>> obterTodosDocumentosCliente(@PathVariable Long cli_id) {
@@ -54,6 +62,7 @@ public class DocumentoControle {
 		}
 
 		List<Documento> documentos = cliente.getDocumentos();
+		adicionadorLink.adicionarLinkList(documentos);
 
 		return ResponseEntity.status(HttpStatus.OK).body(documentos);
 	}
@@ -62,6 +71,11 @@ public class DocumentoControle {
 	public ResponseEntity<Documento> obterDocumentoPorId(@PathVariable Long doc_id) {
 		List<Documento> documentos = doc_repo.findAll();
 		Documento documento = doc_selecionador.selecionar(documentos, doc_id);
+
+		if(documento == null){
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+		}
+		adicionadorLink.adicionarLink(documento);
 
 		return ResponseEntity.status(HttpStatus.OK).body(documento);
 	}
@@ -94,13 +108,17 @@ public class DocumentoControle {
 		
 		List<Documento> documentos = cliente.getDocumentos();
 		Documento documento = doc_selecionador.selecionar(documentos, att_documento.getId());
+
+		if(documento == null){
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cliente não encontrado");
+		}
 		
 		DocumentoAtualizador doc_atualizador = new DocumentoAtualizador();
 
 		doc_atualizador.atualizar(documento, att_documento);
 		doc_repo.save(documento);
 
-		return ResponseEntity.status(HttpStatus.OK).body("Documento atualizado com sucesso!");
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Documento atualizado com sucesso!");
 	}
 
 	@DeleteMapping("/excluir/{cli_id}")
@@ -122,7 +140,7 @@ public class DocumentoControle {
 		cliente.getDocumentos().remove(documento);
 		doc_repo.delete(documento);
 
-		return ResponseEntity.status(HttpStatus.OK).body("Documento excluído com sucesso!");
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Documento excluído com sucesso!");
 	}
 	
 }

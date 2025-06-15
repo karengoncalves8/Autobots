@@ -1,5 +1,6 @@
 package com.autobots.automanager.controles;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.autobots.automanager.entidades.Cliente;
 import com.autobots.automanager.entidades.Telefone;
+import com.autobots.automanager.modelo.AdicionadorLinkTelefone;
 import com.autobots.automanager.modelo.ClienteSelecionador;
 import com.autobots.automanager.modelo.TelefoneAtualizador;
 import com.autobots.automanager.modelo.TelefoneSelecionador;
@@ -40,9 +42,16 @@ public class TelefoneControle {
 	@Autowired
 	private TelefoneSelecionador tel_selecionador;
 
+	@Autowired
+	private AdicionadorLinkTelefone adicionadorLink;
+
 	@GetMapping("/todos")
 	public ResponseEntity<List<Telefone>> obterTodosTelefones() {
 		List<Telefone> telefones = tel_repo.findAll();
+		if (telefones.isEmpty()) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+		adicionadorLink.adicionarLinkList(telefones);
 		return ResponseEntity.status(HttpStatus.OK).body(telefones);
 	}
 	
@@ -56,6 +65,8 @@ public class TelefoneControle {
 		}
 
 		Set<Telefone> telefones = cliente.getTelefones();
+		List<Telefone> telefones_list = new ArrayList<>(telefones);
+		adicionadorLink.adicionarLinkList(telefones_list);
 
 		return ResponseEntity.status(HttpStatus.OK).body(telefones);
 	}
@@ -65,6 +76,11 @@ public class TelefoneControle {
 		List<Telefone> listaTelefones = tel_repo.findAll();
 		Set<Telefone> telefones = new HashSet<>(listaTelefones);
 		Telefone telefone = tel_selecionador.selecionar(telefones, tel_id);
+
+		if(telefone == null){
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+		}
+		adicionadorLink.adicionarLink(telefone);
 
 		return ResponseEntity.status(HttpStatus.OK).body(telefone);
 	}
@@ -98,12 +114,16 @@ public class TelefoneControle {
 		Set<Telefone> telefones = cliente.getTelefones();
 		Telefone telefone = tel_selecionador.selecionar(telefones, att_telefone.getId());
 		
+		if(telefone == null){
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Telefone não encontrado!");
+		}
+
 		TelefoneAtualizador tel_atualizador = new TelefoneAtualizador();
 
 		tel_atualizador.atualizar(telefone, att_telefone);
 		tel_repo.save(telefone);
 
-		return ResponseEntity.status(HttpStatus.OK).body("Telefone atualizado com sucesso!");
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Telefone atualizado com sucesso!");
 	}
 
 	@DeleteMapping("/excluir/{cli_id}")
