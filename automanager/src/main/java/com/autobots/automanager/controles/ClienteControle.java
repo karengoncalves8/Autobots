@@ -27,6 +27,7 @@ import com.autobots.automanager.repositorios.ClienteRepositorio;
 @RestController
 @RequestMapping("/cliente")
 public class ClienteControle {
+	
 	@Autowired
 	private ClienteRepositorio repositorio;
 	@Autowired
