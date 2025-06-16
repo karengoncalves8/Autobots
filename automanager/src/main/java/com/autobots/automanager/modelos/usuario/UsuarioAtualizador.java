@@ -1,0 +1,43 @@
+package com.autobots.automanager.modelos.usuario;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import com.autobots.automanager.entidades.Usuario;
+import com.autobots.automanager.enums.PerfilUsuario;
+import com.autobots.automanager.modelos.StringVerificadorNulo;
+import com.autobots.automanager.modelos.documento.DocumentoAtualizador;
+import com.autobots.automanager.modelos.endereco.EnderecoAtualizador;
+import com.autobots.automanager.modelos.telefone.TelefoneAtualizador;
+
+public class UsuarioAtualizador {
+    private StringVerificadorNulo verificador = new StringVerificadorNulo();
+	private EnderecoAtualizador enderecoAtualizador = new EnderecoAtualizador();
+	private DocumentoAtualizador documentoAtualizador = new DocumentoAtualizador();
+	private TelefoneAtualizador telefoneAtualizador = new TelefoneAtualizador();
+
+	private void atualizarDados(Usuario usuario, Usuario atualizacao) {
+		if (!verificador.verificar(atualizacao.getNome())) {
+			usuario.setNome(atualizacao.getNome());
+		}
+		if (!verificador.verificar(atualizacao.getNomeSocial())) {
+			usuario.setNomeSocial(atualizacao.getNomeSocial());
+		}
+		if(!atualizacao.getPerfis().isEmpty()){
+			Set<PerfilUsuario> perfis_att = new HashSet<>();
+			for (PerfilUsuario perfil : atualizacao.getPerfis()){
+				if(!verificador.verificar(perfil.name())){
+					perfis_att.add(perfil);
+				}
+			}
+			usuario.setPerfis(perfis_att);
+		}
+	}
+
+	public void atualizar(Usuario usuario, Usuario atualizacao) {
+		atualizarDados(usuario, atualizacao);
+		enderecoAtualizador.atualizar(usuario.getEndereco(), atualizacao.getEndereco());
+		documentoAtualizador.atualizar(usuario.getDocumentos(), atualizacao.getDocumentos());
+		telefoneAtualizador.atualizar(usuario.getTelefones(), atualizacao.getTelefones());
+	}
+}
