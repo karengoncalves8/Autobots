@@ -2,7 +2,10 @@ package com.autobots.automanager.entidades;
 
 import java.util.Date;
 
+import org.springframework.hateoas.RepresentationModel;
+
 import com.autobots.automanager.enums.TipoDocumento;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -14,7 +17,8 @@ import lombok.Data;
 
 @Data
 @Entity
-public class Documento {
+@JsonIgnoreProperties("usuario")
+public class Documento extends RepresentationModel<Documento> {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

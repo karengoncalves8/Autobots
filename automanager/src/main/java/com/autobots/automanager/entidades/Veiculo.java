@@ -3,6 +3,8 @@ package com.autobots.automanager.entidades;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.springframework.hateoas.RepresentationModel;
+
 import com.autobots.automanager.enums.TipoVeiculo;
 
 import jakarta.persistence.CascadeType;
@@ -21,7 +23,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(exclude = { "proprietario", "vendas" })
 @Entity
-public class Veiculo {
+public class Veiculo extends RepresentationModel<Veiculo>{
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

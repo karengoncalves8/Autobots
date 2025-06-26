@@ -1,7 +1,13 @@
 package com.autobots.automanager.entidades;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+
+import org.springframework.hateoas.RepresentationModel;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import com.autobots.automanager.enums.PerfilUsuario;
 
@@ -22,7 +28,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(exclude = { "mercadorias", "vendas", "veiculos" })
 @Entity
-public class Usuario {
+public class Usuario extends RepresentationModel<Usuario> {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

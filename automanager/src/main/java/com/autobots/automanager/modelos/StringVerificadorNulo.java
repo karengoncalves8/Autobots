@@ -1,5 +1,7 @@
 package com.autobots.automanager.modelos;
 
+import java.util.Date;
+
 public class StringVerificadorNulo {
 
 	public boolean verificar(String dado) {
@@ -10,5 +12,9 @@ public class StringVerificadorNulo {
 			}
 		}
 		return nulo;
+	}
+
+	public <T> boolean verificarGenerico(T dado) {
+		return dado == null;
 	}
 }
