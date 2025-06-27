@@ -1,6 +1,7 @@
 package com.autobots.automanager.seguranca.adaptadores;
 
 import com.autobots.automanager.entidades.Usuario;
+import com.autobots.automanager.enums.PerfilUsuario;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,9 +12,11 @@ import com.autobots.automanager.entidades.CredencialCodigoBarra;
 import com.autobots.automanager.entidades.CredencialSenha;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 
 @AllArgsConstructor
 @Data
@@ -46,7 +49,12 @@ public class UsuarioDetailsImpl implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.emptyList();
+        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        for(PerfilUsuario perfil : this.usuario.getPerfis()){
+            SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + perfil.toString());
+				authorities.add(authority);
+        }
+        return authorities;
     }
 
     @Override

@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -41,6 +42,7 @@ public class EnderecoControle {
 	@Autowired
 	private EnderecoAdicionadorLink adicionadorLink;
 
+	@PreAuthorize("hasRole('ROLE_VENDEDOR')")
 	@GetMapping("/todos")
 	public ResponseEntity<List<Endereco>> obterTodosEnderecos() {
 		List<Endereco> enderecos = end_repo.findAll();
@@ -51,6 +53,7 @@ public class EnderecoControle {
 		return ResponseEntity.status(HttpStatus.OK).body(enderecos);
 	}
 	
+	@PreAuthorize("hasRole('ROLE_VENDEDOR')")
 	@GetMapping("/usuario/{usu_id}")
 	public ResponseEntity<Endereco> obterUsuarioEndereco(@PathVariable Long usu_id) {
 		List<Usuario> usuarios = usu_repo.findAll();
@@ -66,6 +69,7 @@ public class EnderecoControle {
 		return ResponseEntity.status(HttpStatus.OK).body(endereco);
 	}
 
+	@PreAuthorize("hasRole('ROLE_VENDEDOR')")
 	@GetMapping("/{end_id}")
 	public ResponseEntity<?> obterEnderecoPorId(@PathVariable Long end_id) {
 		List<Endereco> enderecos = end_repo.findAll();
@@ -80,6 +84,7 @@ public class EnderecoControle {
 		return ResponseEntity.status(HttpStatus.OK).body(endereco);
 	}
 
+	@PreAuthorize("hasRole('ROLE_VENDEDOR')")
 	@PostMapping("/{usu_id}/cadastrar")
 	public ResponseEntity<String> cadastrarUsuarioEndereco(@PathVariable Long usu_id, @RequestBody Endereco endereco) {
 		List<Usuario> usuarios = usu_repo.findAll();
@@ -95,7 +100,7 @@ public class EnderecoControle {
 		return ResponseEntity.status(HttpStatus.CREATED).body("Endereço cadastrado com sucesso!");
 	}
 	
-
+	@PreAuthorize("hasRole('ROLE_VENDEDOR')")
 	@PutMapping("/atualizar/{usu_id}")
 	public ResponseEntity<String> atualizarUsuarioEndereco(@PathVariable Long usu_id, @RequestBody Endereco att_endereco) {
 		List<Usuario> usuarios = usu_repo.findAll();
@@ -115,6 +120,7 @@ public class EnderecoControle {
 		return ResponseEntity.status(HttpStatus.OK).body("Endereço atualizado com sucesso!");
 	}
 
+	@PreAuthorize("hasRole('ROLE_VENDEDOR')")
 	@DeleteMapping("/excluir/{usu_id}")
 	public ResponseEntity<String> deletarUsuarioEndereco(@PathVariable Long usu_id) {
 		List<Usuario> usuarios = usu_repo.findAll();

@@ -7,6 +7,7 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -43,6 +44,7 @@ public class DocumentoControle {
 	@Autowired
 	private DocumentoAdicionadorLink adicionadorLink;
 
+	@PreAuthorize("hasRole('ROLE_VENDEDOR')")
 	@GetMapping("/todos")
 	public ResponseEntity<List<Documento>> obterTodosDocumetnos() {
 		List<Documento> documentos = doc_repo.findAll();
@@ -53,6 +55,7 @@ public class DocumentoControle {
 		return ResponseEntity.status(HttpStatus.OK).body(documentos);
 	}						
 	
+	@PreAuthorize("hasRole('ROLE_VENDEDOR')")
 	@GetMapping("/usuario/{usu_id}")
 	public ResponseEntity<Set<Documento>> obterTodosDocumentosUsuario(@PathVariable Long usu_id) {
 		List<Usuario> usuarios = usu_repo.findAll();
@@ -68,6 +71,7 @@ public class DocumentoControle {
 		return ResponseEntity.status(HttpStatus.OK).body(documentos);
 	}
 
+	@PreAuthorize("hasRole('ROLE_VENDEDOR')")
 	@GetMapping("/{doc_id}")
 	public ResponseEntity<Documento> obterDocumentoPorId(@PathVariable Long doc_id) {
 		List<Documento> documentos = doc_repo.findAll();
@@ -81,7 +85,7 @@ public class DocumentoControle {
 		return ResponseEntity.status(HttpStatus.OK).body(documento);
 	}
 
-
+	@PreAuthorize("hasRole('ROLE_VENDEDOR')")
 	@PostMapping("/{usu_id}/cadastrar")
 	public ResponseEntity<String> cadastrarUsuarioDocumento(@PathVariable Long usu_id, @RequestBody Documento documento) {
 		List<Usuario> usuarios = usu_repo.findAll();
@@ -97,7 +101,7 @@ public class DocumentoControle {
 		return ResponseEntity.status(HttpStatus.OK).body("Documento cadastrado com sucesso!");
 	}
 	
-
+	@PreAuthorize("hasRole('ROLE_VENDEDOR')")
 	@PutMapping("/atualizar/{usu_id}")
 	public ResponseEntity<String> atualizarUsuarioDocumento(@PathVariable Long usu_id, @RequestBody Documento att_documento) {
 		List<Usuario> usuarios = usu_repo.findAll();
@@ -122,6 +126,7 @@ public class DocumentoControle {
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Documento atualizado com sucesso!");
 	}
 
+	@PreAuthorize("hasRole('ROLE_VENDEDOR')")
 	@DeleteMapping("/excluir/{usu_id}")
 	public ResponseEntity<String> deletarUsuarioDocumento(@PathVariable Long usu_id, @RequestBody Documento doc_excluido) {
 		List<Usuario> usuarios = usu_repo.findAll();

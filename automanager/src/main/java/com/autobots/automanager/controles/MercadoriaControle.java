@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,6 +34,7 @@ public class MercadoriaControle {
 	@Autowired
 	private MercadoriaAdicionadorLink adicionadorLink;
 
+	@PreAuthorize("hasRole('ROLE_VENDEDOR')")
     @GetMapping("/todos")
 	public ResponseEntity<List<Mercadoria>> obterTodasMercadorias() {
 		List<Mercadoria> mercadorias = mer_repo.findAll();
@@ -43,6 +45,7 @@ public class MercadoriaControle {
 		return ResponseEntity.status(HttpStatus.OK).body(mercadorias);
 	}
 	
+	@PreAuthorize("hasRole('ROLE_VENDEDOR')")
 	@GetMapping("/{mer_id}")
 	public ResponseEntity<Mercadoria> obterMercadoria(@PathVariable Long mer_id) {
 		List<Mercadoria> mercadorias = mer_repo.findAll();
@@ -57,6 +60,7 @@ public class MercadoriaControle {
 		return ResponseEntity.status(HttpStatus.OK).body(mercadoria);
 	}
 
+	@PreAuthorize("hasRole('ROLE_GERENTE')")
     @PostMapping("/cadastrar")
 	public ResponseEntity<String> cadastrarMercadoria(@RequestBody Mercadoria mercadoria) {
 		HttpStatus status = HttpStatus.BAD_REQUEST;
@@ -67,6 +71,7 @@ public class MercadoriaControle {
 		return new ResponseEntity<>(status);
 	}
 
+	@PreAuthorize("hasRole('ROLE_GERENTE')")
     @PutMapping("/atualizar")
 	public ResponseEntity<?> atualizarMercadoria(@RequestBody Mercadoria atualizacao) {
 		HttpStatus status = HttpStatus.CONFLICT;
@@ -82,6 +87,7 @@ public class MercadoriaControle {
 		return new ResponseEntity<>(status);
 	}
 
+	@PreAuthorize("hasRole('ROLE_GERENTE')")
     @DeleteMapping("/excluir")
 	public ResponseEntity<?> excluirUsuario(@RequestBody Mercadoria exclusao) {
 		HttpStatus status = HttpStatus.BAD_REQUEST;

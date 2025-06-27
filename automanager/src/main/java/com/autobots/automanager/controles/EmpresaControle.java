@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,6 +36,7 @@ public class EmpresaControle {
 	@Autowired
 	private EmpresaAdicionadorLink adicionadorLink;
 
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@GetMapping("/{id}")
 	public ResponseEntity<Empresa> obterEmpresa(@PathVariable long id) {
 		List<Empresa> empresas = repositorio.findAll();
@@ -47,6 +49,7 @@ public class EmpresaControle {
 		}
 	}
 
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@GetMapping("/todos")
 	public ResponseEntity<List<Empresa>> obterEmpresas() {
 		List<Empresa> empresas = repositorio.findAll();
@@ -58,6 +61,7 @@ public class EmpresaControle {
 		}
 	}
 
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@PostMapping("/cadastrar")
 	public ResponseEntity<?> cadastrarEmpresa(@RequestBody Empresa empresa) {
 		HttpStatus status = HttpStatus.CONFLICT;
@@ -69,6 +73,7 @@ public class EmpresaControle {
 		return new ResponseEntity<>(status);
 	}
 
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@PutMapping("/atualizar/{emp_id}")
 	public ResponseEntity<?> atualizarEmpresa(@PathVariable Long emp_id, @RequestBody Empresa atualizacao) {
 		HttpStatus status = HttpStatus.CONFLICT;
@@ -84,6 +89,7 @@ public class EmpresaControle {
 		return new ResponseEntity<>(status);
 	}
 
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@DeleteMapping("/excluir")
 	public ResponseEntity<?> excluirEmpresa(@RequestBody Empresa exclusao) {
 		HttpStatus status = HttpStatus.NOT_FOUND;

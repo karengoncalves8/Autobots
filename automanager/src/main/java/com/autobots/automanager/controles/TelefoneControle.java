@@ -8,6 +8,7 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -44,6 +45,7 @@ public class TelefoneControle {
 	@Autowired
 	private TelefoneAdicionadorLink adicionadorLink;
 
+	@PreAuthorize("hasRole('ROLE_VENDEDOR')")
 	@GetMapping("/todos")
 	public ResponseEntity<List<Telefone>> obterTodosTelefones() {
 		List<Telefone> telefones = tel_repo.findAll();
@@ -54,6 +56,7 @@ public class TelefoneControle {
 		return ResponseEntity.status(HttpStatus.OK).body(telefones);
 	}
 	
+	@PreAuthorize("hasRole('ROLE_VENDEDOR')")
 	@GetMapping("/usuario/{cli_id}")
 	public ResponseEntity<Set<Telefone>> obterTodosTelefonesUsuario(@PathVariable Long cli_id) {
 		List<Usuario> usuarios = usu_repo.findAll();
@@ -70,6 +73,7 @@ public class TelefoneControle {
 		return ResponseEntity.status(HttpStatus.OK).body(telefones);
 	}
 
+	@PreAuthorize("hasRole('ROLE_VENDEDOR')")
 	@GetMapping("/{tel_id}")
 	public ResponseEntity<Telefone> obterTelefonePorId(@PathVariable Long tel_id) {
 		List<Telefone> listaTelefones = tel_repo.findAll();
@@ -84,7 +88,7 @@ public class TelefoneControle {
 		return ResponseEntity.status(HttpStatus.OK).body(telefone);
 	}
 	
-
+	@PreAuthorize("hasRole('ROLE_VENDEDOR')")
 	@PostMapping("/{cli_id}/cadastrar")
 	public ResponseEntity<String> cadastrarUsuarioTelefone(@PathVariable Long cli_id, @RequestBody Telefone telefone) {
 		List<Usuario> usuarios = usu_repo.findAll();
@@ -100,7 +104,7 @@ public class TelefoneControle {
 		return ResponseEntity.status(HttpStatus.OK).body("Telefone cadastrado com sucesso!");
 	}
 	
-
+	@PreAuthorize("hasRole('ROLE_VENDEDOR')")
 	@PutMapping("/atualizar/{cli_id}")
 	public ResponseEntity<String> atualizarUsuarioTelefone(@PathVariable Long cli_id, @RequestBody Telefone att_telefone) {
 		List<Usuario> usuarios = usu_repo.findAll();
@@ -125,6 +129,7 @@ public class TelefoneControle {
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Telefone atualizado com sucesso!");
 	}
 
+	@PreAuthorize("hasRole('ROLE_VENDEDOR')")
 	@DeleteMapping("/excluir/{cli_id}")
 	public ResponseEntity<String> deletarUsuarioTelefone(@PathVariable Long cli_id, @RequestBody Telefone tel_excluido) {
 		List<Usuario> usuarios = usu_repo.findAll();

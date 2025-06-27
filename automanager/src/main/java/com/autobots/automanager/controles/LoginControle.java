@@ -17,6 +17,8 @@ import com.autobots.automanager.entidades.Credencial;
 import com.autobots.automanager.entidades.CredencialCodigoBarra;
 import com.autobots.automanager.entidades.Usuario;
 import com.autobots.automanager.repositorios.UsuarioRepositorio;
+import com.autobots.automanager.servicos.JwtServico;
+import com.autobots.automanager.seguranca.adaptadores.UsuarioDetailsImpl;
 
 @Controller
 public class LoginControle {
@@ -26,13 +28,21 @@ public class LoginControle {
     @Autowired
     private UsuarioRepositorio usuarioRepositorio;
 
+    @Autowired
+    private JwtServico jwtServico;
+
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginSenhaDTO loginDto) {
         try {
             UsernamePasswordAuthenticationToken authToken =
                 new UsernamePasswordAuthenticationToken(loginDto.getNomeUsuario(), loginDto.getSenha());
-            this.authenticationManager.authenticate(authToken);
-            return ResponseEntity.status(HttpStatus.OK).body("Login realizado com sucesso!");
+            var auth = this.authenticationManager.authenticate(authToken);
+
+            UsuarioDetailsImpl userDetails = (UsuarioDetailsImpl) auth.getPrincipal();
+            Usuario usuario = userDetails.getUsuario();
+            
+            String token = jwtServico.generateToken(usuario);
+            return ResponseEntity.ok().body("Bearer " + token);
         } catch (AuthenticationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciais inválidas");
         }
@@ -46,7 +56,8 @@ public class LoginControle {
                 if (cred instanceof CredencialCodigoBarra) {
                     CredencialCodigoBarra ccb = (CredencialCodigoBarra) cred;
                     if (ccb.getCodigo() == dto.getCodigo() && !ccb.isInativo()) {
-                        return ResponseEntity.status(HttpStatus.OK).body("Login realizado com sucesso!");
+                        String token = jwtServico.generateToken(usuario);
+                        return ResponseEntity.ok().body("Bearer " + token);
                     }
                 }
             }

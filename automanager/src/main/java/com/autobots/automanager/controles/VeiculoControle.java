@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,8 +33,9 @@ public class VeiculoControle {
 	@Autowired
 	private VeiculoAdicionadorLink adicionadorLink;
 
+	@PreAuthorize("hasRole('ROLE_CLIENTE')")
     @GetMapping("/todos")
-	public ResponseEntity<List<Veiculo>> obterTodasVendas() {
+	public ResponseEntity<List<Veiculo>> obterTodosVeiculos() {
 		List<Veiculo> veiculos = repositorio.findAll();
 		if (veiculos.isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -42,8 +44,9 @@ public class VeiculoControle {
 		return ResponseEntity.status(HttpStatus.OK).body(veiculos);
 	}
 	
+	@PreAuthorize("hasRole('ROLE_CLIENTE')")
 	@GetMapping("/{ven_id}")
-	public ResponseEntity<Veiculo> obterVenda(@PathVariable Long ven_id) {
+	public ResponseEntity<Veiculo> obterVeiculo(@PathVariable Long ven_id) {
 		List<Veiculo> veiculos = repositorio.findAll();
 		Veiculo venda = selecionador.selecionar(veiculos, ven_id);
 
@@ -56,8 +59,9 @@ public class VeiculoControle {
 		return ResponseEntity.status(HttpStatus.OK).body(venda);
 	}
 
+	@PreAuthorize("hasRole('ROLE_VENDEDOR')")
     @PostMapping("/cadastrar")
-	public ResponseEntity<String> cadastrarVenda(@RequestBody Veiculo venda) {
+	public ResponseEntity<String> cadastrarVeiculo(@RequestBody Veiculo venda) {
 		HttpStatus status = HttpStatus.BAD_REQUEST;
 		if (venda.getId() == null) {
 			repositorio.save(venda);
@@ -66,6 +70,7 @@ public class VeiculoControle {
 		return new ResponseEntity<>(status);
 	}
 
+	@PreAuthorize("hasRole('ROLE_VENDEDOR')")
     @PutMapping("/atualizar")
 	public ResponseEntity<?> atualizarVeiuclo(@RequestBody Veiculo atualizacao) {
 		HttpStatus status = HttpStatus.CONFLICT;
@@ -81,11 +86,13 @@ public class VeiculoControle {
 		return new ResponseEntity<>(status);
 	}
 
+	@PreAuthorize("hasRole('ROLE_VENDEDOR')")
     @DeleteMapping("/excluir")
 	public ResponseEntity<?> excluirVeiculo(@RequestBody Veiculo exclusao) {
 		HttpStatus status = HttpStatus.BAD_REQUEST;
 		Veiculo venda = repositorio.getReferenceById(exclusao.getId());
 		if (venda != null) {
+			
 			repositorio.delete(venda);
 			status = HttpStatus.NO_CONTENT;
 		}
